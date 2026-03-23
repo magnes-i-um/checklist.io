@@ -1,0 +1,363 @@
+html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чек-лист: Пять дат — проверка готовности</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+        .checklist-card {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+            padding: 28px 24px 32px;
+            transition: all 0.2s ease;
+        }
+        .checklist-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a3e60;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+        .subhead {
+            color: #4a627a;
+            border-left: 4px solid #ffb347;
+            padding-left: 16px;
+            margin: 16px 0 24px 0;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        .checklist-item {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 0;
+        }
+        .item-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-radius: 16px;
+            padding: 8px 12px;
+            margin: 0 -12px;
+        }
+        .item-header:hover {
+            background: #f1f5f9;
+        }
+        .checkbox-area {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .checkbox-area input {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #2c7a4d;
+        }
+        .item-title {
+            flex: 1;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1e2f3e;
+            line-height: 1.4;
+        }
+        .expand-icon {
+            font-size: 1.2rem;
+            color: #7f8c9a;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .item-detail {
+            margin-top: 12px;
+            margin-left: 36px;
+            margin-right: 12px;
+            padding: 16px 20px;
+            background: #fef9e6;
+            border-left: 4px solid #e67e22;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            color: #2c3e2f;
+            line-height: 1.5;
+            display: none;
+        }
+        .item-detail.open {
+            display: block;
+        }
+        .danger-highlight {
+            font-weight: 600;
+            color: #b91c1c;
+            background: #fff0f0;
+            padding: 2px 6px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .footer-note {
+            margin-top: 28px;
+            padding-top: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #5b6e8c;
+            border-top: 1px dashed #cbd5e1;
+        }
+        .check-button {
+            display: block;
+            width: 100%;
+            background: #1a3e60;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 24px 0 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .check-button:hover {
+            background: #0f2e48;
+        }
+        .result-message {
+            padding: 16px;
+            border-radius: 20px;
+            margin-top: 16px;
+            font-size: 1rem;
+            line-height: 1.5;
+            display: none;
+        }
+        .result-success {
+            background: #e0f2e9;
+            color: #1e6f3f;
+            border-left: 6px solid #2c7a4d;
+        }
+        .result-error {
+            background: #ffe8e8;
+            color: #a12222;
+            border-left: 6px solid #d32f2f;
+        }
+        .missing-list {
+            margin-top: 12px;
+            padding-left: 20px;
+        }
+        .missing-list li {
+            margin-bottom: 8px;
+        }
+        @media (max-width: 550px) {
+            .checklist-card {
+                padding: 20px 16px;
+            }
+            .item-detail {
+                margin-left: 12px;
+            }
+            .item-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="checklist-card">
+    <h2>📅 Пять дат, которые спасут от лишних проблем</h2>
+    <div class="subhead">
+        ✅ Отметьте галочками те даты, которые у вас проставлены в документах.<br>
+        ⬇️ Нажмите на строку, чтобы прочитать, почему дата критична.
+    </div>
+
+    <div class="checklist-items" id="checklistItems">
+        <!-- Пункт 1 -->
+        <div class="checklist-item">
+            <div class="item-header" data-target="detail1">
+                <div class="checkbox-area">
+                    <input type="checkbox" class="item-checkbox" data-id="1">
+                </div>
+                <div class="item-title">📌 Дата вводного инструктажа — раньше даты начала работы</div>
+                <div class="expand-icon">▼</div>
+            </div>
+            <div id="detail1" class="item-detail">
+                <strong>Почему это важно:</strong> Если вводный инструктаж проведён <span class="danger-highlight">после того, как работник уже приступил к обязанностям</span> — это прямое нарушение порядка допуска. Инспектор ГИТ сразу зафиксирует факт работы без обучения. <br><br>
+                <strong>Штрафы:</strong> должностное лицо — до 25 000 ₽, организация — до 130 000 ₽ (ч. 3 ст. 5.27.1 КоАП РФ). При несчастном случае — отягчающее обстоятельство.
+            </div>
+        </div>
+
+        <!-- Пункт 2 -->
+        <div class="checklist-item">
+            <div class="item-header" data-target="detail2">
+                <div class="checkbox-area">
+                    <input type="checkbox" class="item-checkbox" data-id="2">
+                </div>
+                <div class="item-title">🛠️ Дата первичного инструктажа — до начала стажировки</div>
+                <div class="expand-icon">▼</div>
+            </div>
+            <div id="detail2" class="item-detail">
+                <strong>Почему это важно:</strong> Первичный инструктаж на рабочем месте должен предшествовать стажировке. Стажировка — это практическое закрепление под контролем наставника. Если первичный инструктаж проведён <span class="danger-highlight">после стажировки или вообще отсутствует</span> — вся стажировка считается нелегитимной.<br><br>
+                <strong>Риски:</strong> При проверке ГИТ сделает вывод, что работник не был обучен безопасным приёмам перед самостоятельной работой. Штраф аналогичен п. 1, а при травме — признание вины работодателя.
+            </div>
+        </div>
+
+        <!-- Пункт 3 -->
+        <div class="checklist-item">
+            <div class="item-header" data-target="detail3">
+                <div class="checkbox-area">
+                    <input type="checkbox" class="item-checkbox" data-id="3">
+                </div>
+                <div class="item-title">📄 Дата распоряжения о стажировке — совпадает с началом стажировки</div>
+                <div class="expand-icon">▼</div>
+            </div>
+            <div id="detail3" class="item-detail">
+                <strong>Почему это важно:</strong> Распоряжение (приказ) о стажировке должно быть подписано <span class="danger-highlight">до того, как работник приступил к стажировке</span>. Если распоряжение оформлено задним числом или отсутствует, стажировка юридически не проведена.<br><br>
+                <strong>Что проверяет инспектор:</strong> Дату распоряжения и дату начала стажировки по журналу. Расхождение более 1 дня — уже нарушение. Штрафы: должностное лицо — до 25 000 ₽, организация — до 130 000 ₽.
+            </div>
+        </div>
+
+        <!-- Пункт 4 -->
+        <div class="checklist-item">
+            <div class="item-header" data-target="detail4">
+                <div class="checkbox-area">
+                    <input type="checkbox" class="item-checkbox" data-id="4">
+                </div>
+                <div class="item-title">🔓 Дата распоряжения о допуске — строго после стажировки</div>
+                <div class="expand-icon">▼</div>
+            </div>
+            <div id="detail4" class="item-detail">
+                <strong>Почему это важно:</strong> Допуск к самостоятельной работе оформляется <span class="danger-highlight">только после успешного завершения стажировки и проверки знаний</span>. Если распоряжение о допуске датировано раньше окончания стажировки — работник фактически работал без законного основания.<br><br>
+                <strong>Последствия:</strong> При несчастном случае ГИТ расценит это как допуск необученного работника. Уголовная ответственность по ст. 143 УК РФ (если тяжкий вред или смерть).
+            </div>
+        </div>
+
+        <!-- Пункт 5 -->
+        <div class="checklist-item">
+            <div class="item-header" data-target="detail5">
+                <div class="checkbox-area">
+                    <input type="checkbox" class="item-checkbox" data-id="5">
+                </div>
+                <div class="item-title">🔄 Дата повторного инструктажа — не позднее 6 месяцев с предыдущего</div>
+                <div class="expand-icon">▼</div>
+            </div>
+            <div id="detail5" class="item-detail">
+                <strong>Критическое правило:</strong> Повторный инструктаж проводится не реже 1 раза в 6 месяцев. Если последний инструктаж был проведён, например, 10.01.2025, то следующий обязан быть <span class="danger-highlight">не позже 10.07.2025</span>.<br><br>
+                <span class="danger-highlight">❗ Если дата повторного инструктажа стоит позже даты несчастного случая — автоматически фиксируется вина работодателя.</span> Штраф до 150 000 ₽ на организацию + возможное уголовное дело при тяжком вреде здоровью или смерти работника.
+            </div>
+        </div>
+    </div>
+
+    <button class="check-button" id="checkButton">🔍 Проверить</button>
+    <div id="resultMessage" class="result-message"></div>
+
+    <!-- Аудио с Google Диска (прямая ссылка на скачивание) -->
+    <audio id="alarmAudio" preload="auto">
+        <source src="https://drive.google.com/uc?export=download&id=102MVn18QooIR0_NTkgdMFssELFAd7VW2" type="audio/mpeg">
+        Ваш браузер не поддерживает аудио.
+    </audio>
+
+    <div class="footer-note">
+        ⚡ <strong>Помните:</strong> каждая дата в документе — это доказательство вашей заботы о безопасности и защита от многомиллионных штрафов.
+    </div>
+</div>
+
+<script>
+    // Словарь описаний для пропущенных пунктов
+    const missingDetails = {
+        1: "Дата вводного инструктажа должна быть раньше даты начала работы. Если её нет или она позже — инспектор зафиксирует допуск без обучения. Штраф до 130 000 ₽.",
+        2: "Первичный инструктаж должен предшествовать стажировке. Если дата отсутствует или стоит после стажировки — обучение считается не проведённым.",
+        3: "Распоряжение о стажировке должно быть датировано днём начала стажировки. Без него или с задним числом стажировка юридически недействительна.",
+        4: "Распоряжение о допуске оформляется строго после окончания стажировки. Ранний допуск — работа без законных оснований, уголовные риски.",
+        5: "Повторный инструктаж проводится не реже 1 раза в 6 месяцев. Если дата отсутствует или пропущена — автоматическая вина работодателя при несчастном случае."
+    };
+
+    // Названия пунктов для вывода
+    const itemNames = {
+        1: "📌 Дата вводного инструктажа",
+        2: "🛠️ Дата первичного инструктажа",
+        3: "📄 Дата распоряжения о стажировке",
+        4: "🔓 Дата распоряжения о допуске",
+        5: "🔄 Дата повторного инструктажа"
+    };
+
+    const checkButton = document.getElementById('checkButton');
+    const resultDiv = document.getElementById('resultMessage');
+    const audioElement = document.getElementById('alarmAudio');
+
+    // Функция для получения отмеченных ID
+    function getCheckedIds() {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const checked = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                checked.push(parseInt(cb.getAttribute('data-id')));
+            }
+        });
+        return checked;
+    }
+
+    // Проверка
+    function runCheck() {
+        const checkedIds = getCheckedIds();
+        const allIds = [1,2,3,4,5];
+        const missing = allIds.filter(id => !checkedIds.includes(id));
+
+        if (missing.length === 0) {
+            // Все отмечены — успех
+            resultDiv.className = 'result-message result-success';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <strong>✅ Всё в порядке!</strong><br>
+                Вы подтвердили наличие всех ключевых дат. Это значит, что ваши документы готовы к проверке, а риски штрафов и претензий сведены к минимуму. Так держать!
+            `;
+            // Останавливаем аудио, если играло
+            audioElement.pause();
+            audioElement.currentTime = 0;
+        } else {
+            // Есть пропущенные — пытаемся проиграть аудио
+            audioElement.play().catch(e => console.log("Аудио не загружено, но сообщение показано"));
+            // Формируем сообщение с перечислением пропущенных дат
+            let missingHtml = `<strong>⚠️ Внимание: обнаружены незаполненные или некорректные даты</strong><br>
+            Проверьте следующие позиции в своих документах:<br><ul class="missing-list">`;
+            missing.forEach(id => {
+                missingHtml += `<li><strong>${itemNames[id]}</strong><br>${missingDetails[id]}</li>`;
+            });
+            missingHtml += `</ul><br><strong>Рекомендация:</strong> срочно приведите документацию в порядок, чтобы избежать штрафов и уголовных рисков.`;
+            resultDiv.className = 'result-message result-error';
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = missingHtml;
+        }
+    }
+
+    checkButton.addEventListener('click', runCheck);
+
+    // Интерактив: раскрытие/закрытие подсказок по клику на .item-header (без конфликта с чекбоксами)
+    document.querySelectorAll('.item-header').forEach(header => {
+        const targetId = header.getAttribute('data-target');
+        const detailBlock = document.getElementById(targetId);
+        const expandIcon = header.querySelector('.expand-icon');
+
+        header.addEventListener('click', (e) => {
+            if (e.target.type === 'checkbox') return;
+
+            if (detailBlock.classList.contains('open')) {
+                detailBlock.classList.remove('open');
+                if (expandIcon) expandIcon.textContent = '▼';
+            } else {
+                detailBlock.classList.add('open');
+                if (expandIcon) expandIcon.textContent = '▲';
+            }
+        });
+    });
+</script>
+</body>
+</html>
