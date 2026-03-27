@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -258,10 +259,12 @@
     <button class="check-button" id="checkButton">🔍 Проверить</button>
     <div id="resultMessage" class="result-message"></div>
 
-    <!-- Аудио с Google Диска (прямая ссылка на скачивание) -->
-    <audio id="alarmAudio" preload="auto">
-        <source src="https://github.com/magnes-i-um/checklist.io/raw/refs/heads/assets/bonus.MP3" type="audio/mpeg">
-        Ваш браузер не поддерживает аудио.
+    <!-- Два аудиоэлемента: шансон и аллилуйя. Замените src на свои реальные ссылки -->
+    <audio id="failAudio" preload="auto">
+        <source src="https://magnes-i-um.github.io/raw/refs/heads/assets/bonus.MP3" type="audio/mpeg">
+    </audio>
+    <audio id="successAudio" preload="auto">
+        <source src="https://magnes-i-um.github.io/raw/refs/heads/assets/hallelujah.MP3" type="audio/mpeg">
     </audio>
 
     <div class="footer-note">
@@ -290,7 +293,8 @@
 
     const checkButton = document.getElementById('checkButton');
     const resultDiv = document.getElementById('resultMessage');
-    const audioElement = document.getElementById('alarmAudio');
+    const failAudio = document.getElementById('failAudio');
+    const successAudio = document.getElementById('successAudio');
 
     // Функция для получения отмеченных ID
     function getCheckedIds() {
@@ -318,12 +322,17 @@
                 <strong>✅ Всё в порядке!</strong><br>
                 Вы подтвердили наличие всех ключевых дат. Это значит, что ваши документы готовы к проверке, а риски штрафов и претензий сведены к минимуму. Так держать!
             `;
-            // Останавливаем аудио, если играло
-            audioElement.pause();
-            audioElement.currentTime = 0;
+            // Останавливаем шансон, если играл
+            failAudio.pause();
+            failAudio.currentTime = 0;
+            // Играем аллилуйя
+            successAudio.play().catch(e => console.log("Аудио не загружено, но сообщение показано"));
         } else {
-            // Есть пропущенные — пытаемся проиграть аудио
-            audioElement.play().catch(e => console.log("Аудио не загружено, но сообщение показано"));
+            // Есть пропущенные — проигрываем шансон, останавливаем аллилуйя
+            successAudio.pause();
+            successAudio.currentTime = 0;
+            failAudio.play().catch(e => console.log("Аудио не загружено, но сообщение показано"));
+
             // Формируем сообщение с перечислением пропущенных дат
             let missingHtml = `<strong>⚠️ Внимание: обнаружены незаполненные или некорректные даты</strong><br>
             Проверьте следующие позиции в своих документах:<br><ul class="missing-list">`;
